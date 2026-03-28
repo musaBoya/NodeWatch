@@ -11,12 +11,18 @@ MainWindow::MainWindow(QWidget *parent)
     resize(800, 500);
 
     auto *central = new QWidget(this);
+    setCentralWidget(central);
     auto *layout = new QVBoxLayout(central);
 
-    m_listWidget = new QListWidget(central);
-    layout->addWidget(m_listWidget);
+    auto *logList = new QWidget(central);
+    auto *errorList = new QWidget(central);
 
-    setCentralWidget(central);
+    m_listWidget = new QListWidget(logList);
+    m_errorListWidget = new QListWidget(errorList);
+    layout->addWidget(m_listWidget,3);
+    layout->addWidget(m_errorListWidget,1);
+
+
     statusBar()->showMessage("Ready");
 
     connect(&m_server, &HttpServer::telemetryReceived,
@@ -30,7 +36,18 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::onTelemetryReceived(const TelemetryEntry &entry)
 {
-    m_listWidget->addItem(entry.toDisplayString());
+    auto *item = new QListWidgetItem(entry.toDisplayString());
+    if (entry.temperature > 26) {
+        auto *item2 = new QListWidgetItem(entry.toDisplayString());
+        item->setForeground(Qt::red);
+        item2->setForeground(Qt::red);
+        m_errorListWidget->addItem(item2);
+        m_errorListWidget->scrollToBottom();
+    }
+    else {
+        item->setForeground(Qt::white);
+    }
+    m_listWidget->addItem(item);
     m_listWidget->scrollToBottom();
 }
 
