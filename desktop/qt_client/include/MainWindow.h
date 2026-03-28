@@ -19,5 +19,6 @@ private slots:
 
 private:
     QListWidget *m_listWidget = nullptr;
+    QListWidget *m_errorListWidget = nullptr;
     HttpServer m_server;
 };
