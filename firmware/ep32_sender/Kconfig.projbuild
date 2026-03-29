@@ -1,0 +1,24 @@
+menu "NodeWatch Sender Configuration"
+
+config NODEWATCH_WIFI_SSID
+    string "WiFi SSID"
+    default "CHANGE_ME"
+
+config NODEWATCH_WIFI_PASSWORD
+    string "WiFi Password"
+    default "CHANGE_ME"
+
+config NODEWATCH_SERVER_URL
+    string "Telemetry Server URL"
+    default "http://192.168.1.100:8080/telemetry"
+
+config NODEWATCH_DEVICE_ID
+    string "Device ID"
+    default "esp32_01"
+
+config NODEWATCH_SEND_INTERVAL_MS
+    int "Telemetry Send Interval (ms)"
+    default 10000
+    range 1000 600000
+
+endmenu
