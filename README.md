@@ -1,7 +1,3 @@
-Lordum, repoya uygun olacak şekilde doğrudan kullanabileceğin bir `README.md` taslağı hazırladım.
-
-Bu taslak; projenin kökte `desktop/qt_client` ve `firmware/ep32_sender` olarak iki ana parçaya ayrıldığını, masaüstü tarafında Qt6 `Widgets`, `Network` ve `HttpServer` kullanıldığını, ESP32 tarafında ise telemetri verisinin HTTP POST ile gönderildiğini esas alıyor. Ayrıca masaüstü uygulamasının 8080 portunda dinlediği ve sıcaklık `26` üstüne çıktığında ayrı hata listesine düşürdüğü mevcut koda göre yazıldı. ([GitHub][1])
-
 ````md
 # NodeWatch
 
