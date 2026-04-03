@@ -3,6 +3,7 @@
 #include <QStatusBar>
 #include <QVBoxLayout>
 #include <QWidget>
+#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -31,7 +32,13 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&m_server, &HttpServer::serverMessage,
             this, &MainWindow::onServerMessage);
 
-    m_server.start(8080);
+    if (!m_server.start(8080)) {
+        statusBar()->showMessage("HTTP server failed to start on port 8080");
+        QMessageBox::critical(this,
+                              "Server Error",
+                              "HTTP server could not start on port 8080.\n"
+                              "Please ensure the port is available.");
+    }
 }
 
 void MainWindow::onTelemetryReceived(const TelemetryEntry &entry)
@@ -43,9 +50,6 @@ void MainWindow::onTelemetryReceived(const TelemetryEntry &entry)
         item2->setForeground(Qt::red);
         m_errorListWidget->addItem(item2);
         m_errorListWidget->scrollToBottom();
-    }
-    else {
-        item->setForeground(Qt::white);
     }
     m_listWidget->addItem(item);
     m_listWidget->scrollToBottom();
