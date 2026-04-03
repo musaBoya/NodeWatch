@@ -1,4 +1,3 @@
-````md
 # NodeWatch
 
 NodeWatch is a small end-to-end telemetry monitoring project built with:
@@ -17,7 +16,7 @@ NodeWatch/
 ├── firmware/
 │   └── ep32_sender/
 └── docs/
-````
+```
 
 ## Overview
 
