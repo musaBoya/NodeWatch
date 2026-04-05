@@ -61,7 +61,7 @@ http://<desktop-ip>:8080/telemetry
 }
 ```
 
-5. Telemetry is displayed in the UI
+5. Telemetry is displayed in the UI and saved to local SQLite storage
 6. If temperature is above the threshold, the entry is also shown in the error list
 
 ## Features
@@ -70,6 +70,7 @@ http://<desktop-ip>:8080/telemetry
 * HTTP-based communication between ESP32 and desktop
 * Qt desktop UI for live monitoring
 * JSON telemetry parsing
+* Local SQLite persistence for telemetry history
 * Configurable firmware values via `menuconfig`
 * Basic high-temperature warning behavior
 
@@ -90,6 +91,7 @@ desktop/qt_client
   * `Widgets`
   * `Network`
   * `HttpServer`
+  * `Sql`
 
 ### Build
 
