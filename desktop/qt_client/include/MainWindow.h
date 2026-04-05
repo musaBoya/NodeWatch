@@ -4,6 +4,7 @@
 #include <QListWidget>
 
 #include "HttpServer.h"
+#include "TelemetryStore.h"
 
 class MainWindow : public QMainWindow
 {
@@ -18,7 +19,11 @@ private slots:
     void onServerMessage(const QString &message);
 
 private:
+    void addTelemetryToUi(const TelemetryEntry &entry);
+
+private:
     QListWidget *m_listWidget = nullptr;
     QListWidget *m_errorListWidget = nullptr;
     HttpServer m_server;
+    TelemetryStore m_store;
 };

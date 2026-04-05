@@ -8,10 +8,12 @@ Qt 6 desktop receiver for NodeWatch telemetry.
 - Accepts `POST /telemetry` JSON payloads
 - Displays all telemetry in the main list
 - Shows high-temperature records (`temperature > 26`) in the alert list
+- Persists telemetry to a local SQLite database
+- Loads recent telemetry history on startup
 
 ## Requirements
 
-- Qt 6 with modules: `Widgets`, `Network`, `HttpServer`
+- Qt 6 with modules: `Widgets`, `Network`, `HttpServer`, `Sql`
 - CMake 3.21+
 
 ## Build

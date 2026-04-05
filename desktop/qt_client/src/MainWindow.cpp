@@ -32,6 +32,27 @@ MainWindow::MainWindow(QWidget *parent)
     connect(&m_server, &HttpServer::serverMessage,
             this, &MainWindow::onServerMessage);
 
+    QString dbError;
+    if (!m_store.initialize(&dbError)) {
+        QMessageBox::warning(this,
+                             "Database Error",
+                             QString("SQLite is not available.\n%1").arg(dbError));
+        statusBar()->showMessage("SQLite initialization failed");
+    } else {
+        QString loadError;
+        const QVector<TelemetryEntry> history = m_store.loadRecent(200, &loadError);
+        if (!loadError.isEmpty()) {
+            statusBar()->showMessage(loadError, 5000);
+        } else if (!history.isEmpty()) {
+            for (const TelemetryEntry &entry : history) {
+                addTelemetryToUi(entry);
+            }
+            statusBar()->showMessage(
+                QString("Loaded %1 telemetry record(s) from SQLite").arg(history.size()),
+                5000);
+        }
+    }
+
     if (!m_server.start(8080)) {
         statusBar()->showMessage("HTTP server failed to start on port 8080");
         QMessageBox::critical(this,
@@ -43,6 +64,21 @@ MainWindow::MainWindow(QWidget *parent)
 
 void MainWindow::onTelemetryReceived(const TelemetryEntry &entry)
 {
+    QString dbError;
+    if (!m_store.insertEntry(entry, &dbError)) {
+        statusBar()->showMessage(dbError, 5000);
+    }
+
+    addTelemetryToUi(entry);
+}
+
+void MainWindow::onServerMessage(const QString &message)
+{
+    statusBar()->showMessage(message, 3000);
+}
+
+void MainWindow::addTelemetryToUi(const TelemetryEntry &entry)
+{
     auto *item = new QListWidgetItem(entry.toDisplayString());
     if (entry.temperature > 26) {
         auto *item2 = new QListWidgetItem(entry.toDisplayString());
@@ -53,9 +89,4 @@ void MainWindow::onTelemetryReceived(const TelemetryEntry &entry)
     }
     m_listWidget->addItem(item);
     m_listWidget->scrollToBottom();
-}
-
-void MainWindow::onServerMessage(const QString &message)
-{
-    statusBar()->showMessage(message, 3000);
 }
