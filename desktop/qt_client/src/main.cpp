@@ -1,8 +1,8 @@
 #include <QApplication>
 #include <QMetaType>
 
-#include "MainWindow.h"
-#include "TelemetryEntry.h"
+#include "models/TelemetryEntry.h"
+#include "ui/MainWindow.h"
 
 int main(int argc, char *argv[])
 {

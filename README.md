@@ -1,7 +1,6 @@
-````md
 # NodeWatch
 
-NodeWatch is a small end-to-end telemetry monitoring project built with:
+This repository can be used as a starter template for small telemetry or device-monitoring projects built with:
 
 - **ESP32 firmware** for generating and sending telemetry data
 - **Qt desktop application** for receiving and visualizing telemetry in real time
@@ -17,7 +16,7 @@ NodeWatch/
 ├── firmware/
 │   └── ep32_sender/
 └── docs/
-````
+```
 
 ## Overview
 
@@ -29,7 +28,8 @@ The desktop app is a **Qt 6** application that:
 * listens for telemetry on `/telemetry`
 * parses incoming JSON payloads
 * shows received records in the UI
-* highlights high-temperature entries as errors
+* highlights high-temperature entries as errors using a configurable threshold
+* loads runtime settings from a desktop config file
 
 ### ESP32 Sender
 
@@ -42,7 +42,7 @@ The firmware is an **ESP-IDF** project that:
 
 ## How It Works
 
-1. The desktop application starts an HTTP server on port `8080`
+1. The desktop application starts an HTTP server using configured bind address and port (defaults: `0.0.0.0:8080`)
 2. The ESP32 connects to the configured Wi-Fi network
 3. The ESP32 sends telemetry to:
 
@@ -62,8 +62,8 @@ http://<desktop-ip>:8080/telemetry
 }
 ```
 
-5. Telemetry is displayed in the UI
-6. If temperature is above the threshold, the entry is also shown in the error list
+5. Telemetry is displayed in the UI and saved to local SQLite storage
+6. If temperature is above the configured threshold (default: `26`), the entry is also shown in the error list
 
 ## Features
 
@@ -71,8 +71,10 @@ http://<desktop-ip>:8080/telemetry
 * HTTP-based communication between ESP32 and desktop
 * Qt desktop UI for live monitoring
 * JSON telemetry parsing
+* Local SQLite persistence for telemetry history
 * Configurable firmware values via `menuconfig`
-* Basic high-temperature warning behavior
+* Configurable desktop runtime settings via `nodewatch.ini`
+* High-temperature warning behavior with configurable threshold
 
 ## Desktop Application
 
@@ -91,6 +93,7 @@ desktop/qt_client
   * `Widgets`
   * `Network`
   * `HttpServer`
+  * `Sql`
 
 ### Build
 
@@ -106,7 +109,7 @@ cmake --build build
 ./build/NodeWatchDesktop
 ```
 
-When started, the app opens a window and begins listening for telemetry requests.
+When started, the app opens a window, loads `nodewatch.ini` (auto-created if missing), and begins listening for telemetry requests.
 
 ## ESP32 Firmware
 
@@ -149,7 +152,7 @@ Default values currently include:
 ```text
 SSID: CHANGE_ME
 Password: CHANGE_ME
-Server URL: http://192.168.1.100:8080/telemetry
+Server URL: http://0.0.0.0:8080/telemetry
 Device ID: esp32_01
 Interval: 10000 ms
 ```
@@ -169,9 +172,9 @@ idf.py -p /dev/ttyUSB0 flash monitor
 
 ## Temperature Warning Logic
 
-At the moment, the desktop client treats telemetry entries with temperature greater than `26` as warning/error entries and displays them in a separate list.
+The desktop client treats telemetry entries with temperature greater than `alerts.temperature_threshold` as warning/error entries and displays them in a separate list.
 
-This is currently a simple built-in rule and can be extended later for richer alerting.
+The default threshold is `26.0`, and it can be changed in the desktop config file.
 
 ## Notes
 
@@ -184,12 +187,3 @@ This is currently a simple built-in rule and can be extended later for richer al
   * charts and dashboards
   * multi-device monitoring
   * alert rules
-
-## Future Ideas
-
-* Add real sensor support
-* Save telemetry history to file or database
-* Add charts for temperature/humidity
-* Add multiple device support
-* Add configurable alert thresholds from the UI
-* Add filtering and search in the desktop client
