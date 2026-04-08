@@ -2,9 +2,11 @@
 
 #include <QMainWindow>
 #include <QListWidget>
+#include <QStringList>
 
-#include "HttpServer.h"
-#include "TelemetryStore.h"
+#include "config/AppSettings.h"
+#include "server/HttpServer.h"
+#include "storage/TelemetryStore.h"
 
 class MainWindow : public QMainWindow
 {
@@ -12,7 +14,7 @@ class MainWindow : public QMainWindow
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow() override = default;
+    ~MainWindow() override;
 
 private slots:
     void onTelemetryReceived(const TelemetryEntry &entry);
@@ -24,6 +26,8 @@ private:
 private:
     QListWidget *m_listWidget = nullptr;
     QListWidget *m_errorListWidget = nullptr;
+    QStringList m_startupWarnings;
+    AppSettings m_settings;
     HttpServer m_server;
     TelemetryStore m_store;
 };

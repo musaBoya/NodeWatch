@@ -1,0 +1,13 @@
+[server]
+port=8080
+bind_address=0.0.0.0
+
+[storage]
+db_path=nodewatch.db
+
+[alerts]
+temperature_threshold=26.0
+
+[logging]
+level=info
+file_path=nodewatch.log

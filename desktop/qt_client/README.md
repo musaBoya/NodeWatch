@@ -2,14 +2,25 @@
 
 Qt 6 desktop receiver for NodeWatch telemetry.
 
+## Source Layout
+
+- `config/`: loading and validating desktop runtime settings
+- `logging/`: reusable logger module (ported from `stl_wrapper`)
+- `server/`: HTTP endpoint and request parsing
+- `models/`: telemetry data model
+- `storage/`: SQLite persistence layer
+- `ui/`: Qt widgets and window behavior
+- `rules/`: alert/threshold rules
+
 ## Features
 
-- Starts an HTTP server on port `8080`
+- Loads runtime config from `nodewatch.ini` (auto-created on first run)
 - Accepts `POST /telemetry` JSON payloads
 - Displays all telemetry in the main list
-- Shows high-temperature records (`temperature > 26`) in the alert list
+- Applies configurable alert thresholds for warnings
 - Persists telemetry to a local SQLite database
 - Loads recent telemetry history on startup
+- Supports configurable server bind address, port, db path, and log level
 
 ## Requirements
 
@@ -28,3 +39,18 @@ cmake --build build
 ```bash
 ./build/NodeWatchDesktop
 ```
+
+## Configuration
+
+- Default config path: `./build/nodewatch.ini` (next to executable)
+- Override path: set `NODEWATCH_CONFIG=/absolute/path/to/nodewatch.ini`
+- Example config template: `nodewatch.ini.example`
+
+Available keys:
+
+- `server.port`
+- `server.bind_address`
+- `storage.db_path`
+- `alerts.temperature_threshold`
+- `logging.level` (`debug`, `info`, `warning`, `error`)
+- `logging.file_path`

@@ -28,7 +28,8 @@ The desktop app is a **Qt 6** application that:
 * listens for telemetry on `/telemetry`
 * parses incoming JSON payloads
 * shows received records in the UI
-* highlights high-temperature entries as errors
+* highlights high-temperature entries as errors using a configurable threshold
+* loads runtime settings from a desktop config file
 
 ### ESP32 Sender
 
@@ -41,7 +42,7 @@ The firmware is an **ESP-IDF** project that:
 
 ## How It Works
 
-1. The desktop application starts an HTTP server on port `8080`
+1. The desktop application starts an HTTP server using configured bind address and port (defaults: `0.0.0.0:8080`)
 2. The ESP32 connects to the configured Wi-Fi network
 3. The ESP32 sends telemetry to:
 
@@ -62,7 +63,7 @@ http://<desktop-ip>:8080/telemetry
 ```
 
 5. Telemetry is displayed in the UI and saved to local SQLite storage
-6. If temperature is above the threshold, the entry is also shown in the error list
+6. If temperature is above the configured threshold (default: `26`), the entry is also shown in the error list
 
 ## Features
 
@@ -72,7 +73,8 @@ http://<desktop-ip>:8080/telemetry
 * JSON telemetry parsing
 * Local SQLite persistence for telemetry history
 * Configurable firmware values via `menuconfig`
-* Basic high-temperature warning behavior
+* Configurable desktop runtime settings via `nodewatch.ini`
+* High-temperature warning behavior with configurable threshold
 
 ## Desktop Application
 
@@ -107,7 +109,7 @@ cmake --build build
 ./build/NodeWatchDesktop
 ```
 
-When started, the app opens a window and begins listening for telemetry requests.
+When started, the app opens a window, loads `nodewatch.ini` (auto-created if missing), and begins listening for telemetry requests.
 
 ## ESP32 Firmware
 
@@ -170,9 +172,9 @@ idf.py -p /dev/ttyUSB0 flash monitor
 
 ## Temperature Warning Logic
 
-At the moment, the desktop client treats telemetry entries with temperature greater than `26` as warning/error entries and displays them in a separate list.
+The desktop client treats telemetry entries with temperature greater than `alerts.temperature_threshold` as warning/error entries and displays them in a separate list.
 
-This is currently a simple built-in rule and can be extended later for richer alerting.
+The default threshold is `26.0`, and it can be changed in the desktop config file.
 
 ## Notes
 
