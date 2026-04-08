@@ -1,6 +1,6 @@
 # NodeWatch
 
-NodeWatch is a small end-to-end telemetry monitoring project built with:
+This repository can be used as a starter template for small telemetry or device-monitoring projects built with:
 
 - **ESP32 firmware** for generating and sending telemetry data
 - **Qt desktop application** for receiving and visualizing telemetry in real time
@@ -152,7 +152,7 @@ Default values currently include:
 ```text
 SSID: CHANGE_ME
 Password: CHANGE_ME
-Server URL: http://192.168.1.100:8080/telemetry
+Server URL: http://0.0.0.0:8080/telemetry
 Device ID: esp32_01
 Interval: 10000 ms
 ```
@@ -187,12 +187,3 @@ The default threshold is `26.0`, and it can be changed in the desktop config fil
   * charts and dashboards
   * multi-device monitoring
   * alert rules
-
-## Future Ideas
-
-* Add real sensor support
-* Save telemetry history to file or database
-* Add charts for temperature/humidity
-* Add multiple device support
-* Add configurable alert thresholds from the UI
-* Add filtering and search in the desktop client
