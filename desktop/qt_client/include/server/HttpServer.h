@@ -1,8 +1,10 @@
 #pragma once
 
 #include <QObject>
-#include "TelemetryEntry.h"
+#include <QString>
 #include <QTcpServer>
+
+#include "models/TelemetryEntry.h"
 
 class QHttpServer;
 
@@ -12,7 +14,7 @@ class HttpServer : public QObject
 
 public:
     explicit HttpServer(QObject *parent = nullptr);
-    bool start(quint16 port);
+    bool start(const QString &bindAddress, quint16 port);
 
 signals:
     void telemetryReceived(const TelemetryEntry &entry);

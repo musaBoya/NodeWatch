@@ -1,4 +1,4 @@
-#include "TelemetryEntry.h"
+#include "models/TelemetryEntry.h"
 
 #include <QDateTime>
 

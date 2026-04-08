@@ -4,7 +4,7 @@
 #include <QSqlDatabase>
 #include <QVector>
 
-#include "TelemetryEntry.h"
+#include "models/TelemetryEntry.h"
 
 class TelemetryStore
 {
@@ -12,6 +12,7 @@ public:
     TelemetryStore();
     ~TelemetryStore();
 
+    void setDatabasePath(const QString &path);
     bool initialize(QString *errorMessage = nullptr);
     bool insertEntry(const TelemetryEntry &entry, QString *errorMessage = nullptr);
     QVector<TelemetryEntry> loadRecent(int limit, QString *errorMessage = nullptr);
@@ -22,5 +23,6 @@ private:
 
 private:
     QString m_connectionName;
+    QString m_databasePath;
     QSqlDatabase m_db;
 };

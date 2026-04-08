@@ -1,4 +1,6 @@
-#include "HttpServer.h"
+#include "server/HttpServer.h"
+
+#include "logging/logger.hpp"
 
 #include <QHttpServer>
 #include <QHttpServerRequest>
@@ -21,14 +23,19 @@ HttpServer::HttpServer(QObject *parent)
             TelemetryEntry entry;
 
             if (!parseTelemetry(request.body(), entry)) {
-                emit serverMessage("Invalid telemetry payload received");
+                const QString message = "Invalid telemetry payload received";
+                Logger::warning(message.toStdString());
+                emit serverMessage(message);
                 return QHttpServerResponse(
                     QByteArray("Invalid payload"),
                     QHttpServerResponse::StatusCode::BadRequest);
             }
 
             emit telemetryReceived(entry);
-            emit serverMessage(QString("Telemetry received: %1").arg(entry.deviceId));
+            const QString message =
+                QString("Telemetry received from device: %1").arg(entry.deviceId);
+            Logger::debug(message.toStdString());
+            emit serverMessage(message);
 
             return QHttpServerResponse(
                 QByteArray("OK"),
@@ -36,18 +43,39 @@ HttpServer::HttpServer(QObject *parent)
         });
 }
 
-bool HttpServer::start(quint16 port)
+bool HttpServer::start(const QString &bindAddress, quint16 port)
 {
     auto *tcpServer = new QTcpServer(this);
+    QHostAddress listenAddress;
 
-    if (!tcpServer->listen(QHostAddress::Any, port)) {
-        emit serverMessage("TCP server is not started");
+    if (!listenAddress.setAddress(bindAddress)) {
+        const QString message = QString("Invalid bind address: %1").arg(bindAddress);
+        Logger::error(message.toStdString());
+        emit serverMessage(message);
+        tcpServer->deleteLater();
+        return false;
+    }
+
+    if (!tcpServer->listen(listenAddress, port)) {
+        const QString message =
+            QString("TCP listen failed on %1:%2 (%3)")
+                .arg(bindAddress)
+                .arg(port)
+                .arg(tcpServer->errorString());
+        Logger::error(message.toStdString());
+        emit serverMessage(message);
+        tcpServer->deleteLater();
         return false;
     }
 
     m_server->bind(tcpServer);
 
-    emit serverMessage(QString("The HTTP server is listening on port %1.").arg(port));
+    const QString message =
+        QString("HTTP server listening on %1:%2")
+            .arg(bindAddress)
+            .arg(port);
+    Logger::info(message.toStdString());
+    emit serverMessage(message);
     return true;
 }
 

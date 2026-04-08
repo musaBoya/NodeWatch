@@ -1,6 +1,7 @@
-#include "TelemetryStore.h"
+#include "storage/TelemetryStore.h"
 
 #include <QDir>
+#include <QFileInfo>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QStandardPaths>
@@ -25,6 +26,11 @@ TelemetryStore::~TelemetryStore()
     }
 }
 
+void TelemetryStore::setDatabasePath(const QString &path)
+{
+    m_databasePath = path.trimmed();
+}
+
 bool TelemetryStore::initialize(QString *errorMessage)
 {
     if (!openDatabase(errorMessage)) {
@@ -40,29 +46,37 @@ bool TelemetryStore::openDatabase(QString *errorMessage)
         return true;
     }
 
-    const QString appDataDir =
-        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    if (appDataDir.isEmpty()) {
-        if (errorMessage != nullptr) {
-            *errorMessage = "Failed to resolve app data directory";
+    QString databasePath = m_databasePath;
+    if (databasePath.isEmpty()) {
+        const QString appDataDir =
+            QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        if (appDataDir.isEmpty()) {
+            if (errorMessage != nullptr) {
+                *errorMessage = "Failed to resolve app data directory";
+            }
+            return false;
         }
-        return false;
+
+        databasePath = QDir(appDataDir).filePath("nodewatch.db");
     }
 
-    QDir dir(appDataDir);
+    const QFileInfo dbInfo(databasePath);
+    QDir dir(dbInfo.absolutePath());
     if (!dir.exists() && !dir.mkpath(".")) {
         if (errorMessage != nullptr) {
-            *errorMessage = QString("Failed to create app data directory: %1").arg(appDataDir);
+            *errorMessage = QString("Failed to create database directory: %1")
+                                .arg(dir.absolutePath());
         }
         return false;
     }
 
     m_db = QSqlDatabase::addDatabase("QSQLITE", m_connectionName);
-    m_db.setDatabaseName(dir.filePath("nodewatch.db"));
+    m_db.setDatabaseName(dbInfo.filePath());
 
     if (!m_db.open()) {
         if (errorMessage != nullptr) {
-            *errorMessage = QString("Failed to open SQLite database: %1")
+            *errorMessage = QString("Failed to open SQLite database at %1: %2")
+                                .arg(dbInfo.filePath())
                                 .arg(m_db.lastError().text());
         }
         return false;
